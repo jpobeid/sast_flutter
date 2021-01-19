@@ -1,40 +1,26 @@
-import 'package:firebase_database/firebase_database.dart';
+import 'dart:math' as math;
+import 'dart:convert';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:sast_project/data/layout_data.dart' as layouts;
 import 'package:sast_project/widgets/sast_app_bar.dart';
-import 'dart:math' as math;
+import 'package:http/http.dart' as http;
+import 'package:sast_project/data/http_data.dart' as httpData;
+import 'package:crypto/crypto.dart' as crypto;
 
 class LoginPage extends StatefulWidget {
-  static const Color colorGradient0 = Color.fromARGB(255, 150, 30, 240);
-  static const Color colorGradient1 = Color.fromARGB(255, 40, 0, 140);
-  static const double fractionSizeContainer = 0.5;
-  static const List<double> listMaxSizeContainer = [400, 600];
-  static const double sizeContainerRadius = 15;
+  static const String routeName = '/login-page';
+  static const String strUrlAppendix = '/login';
   static const List<int> listFlexVertical = [3, 1, 3, 3, 1, 2, 2];
-  static const List<int> listFlexRow = [1, 2, 4];
-  static const TextStyle styleHead =
-      TextStyle(color: Colors.black, fontSize: 34, fontWeight: FontWeight.bold);
-  static const TextStyle styleLabel = TextStyle(
-      color: Color.fromARGB(255, 80, 80, 80),
-      fontSize: 18,
-      fontWeight: FontWeight.normal);
-  static const TextStyle styleButton = TextStyle(
-      color: Color.fromARGB(255, 25, 25, 25),
-      fontSize: 18,
-      fontWeight: FontWeight.bold);
-  static const double fractionSizeLabel = 0.6;
-  static const double sizeIcon = 38;
 
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _controllerUsername =
-      TextEditingController(text: '');
-  final TextEditingController _controllerPassword =
-      TextEditingController(text: '');
-  DatabaseReference _databaseReference = FirebaseDatabase.instance.reference();
+  final TextEditingController _controllerUsername = TextEditingController(text: '');
+  final TextEditingController _controllerPassword = TextEditingController(text: '');
 
   @override
   void dispose() {
@@ -43,23 +29,48 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+  Future<void> onLoginButtonPressed() async {
+    http.Response response = await http.post(httpData.strUrlBase + LoginPage.strUrlAppendix + '/0',
+        headers: httpData.mapHttpHeader,
+        body: json.encode({
+          'email': _controllerUsername.text,
+          'hashedPass': crypto.sha256.convert(utf8.encode(_controllerPassword.text)).toString()
+        }));
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Successful login'),
+          backgroundColor: Colors.green,
+          duration: Duration(milliseconds: layouts.nLoginRegisterDurationSnackBarShort),
+        ),
+      );
+    } else {
+      setState(() {
+        _controllerPassword.clear();
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Incorrect login credentials or account not registered'),
+          backgroundColor: Colors.red,
+          duration: Duration(milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double sizeHeight = MediaQuery.of(context).size.height;
     double sizeWidth = MediaQuery.of(context).size.width;
-    print(_databaseReference);
 
     return Scaffold(
       appBar: makeSastAppBar('Login'),
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                LoginPage.colorGradient0,
-                LoginPage.colorGradient1,
-              ]),
+          gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [
+            layouts.colorLoginRegisterGradient0,
+            layouts.colorLoginRegisterGradient1,
+          ]),
         ),
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
@@ -67,13 +78,12 @@ class _LoginPageState extends State<LoginPage> {
           child: Container(
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius:
-                  BorderRadius.circular(LoginPage.sizeContainerRadius),
+              borderRadius: BorderRadius.circular(layouts.sizeLoginRegisterContainerRadius),
             ),
-            height: math.min(LoginPage.fractionSizeContainer * sizeHeight,
-                LoginPage.listMaxSizeContainer[0]),
-            width: math.min(LoginPage.fractionSizeContainer * sizeWidth,
-                LoginPage.listMaxSizeContainer[1]),
+            height: math.min(layouts.fractionLoginRegisterSizeContainer * sizeHeight,
+                layouts.listLoginRegisterMaxSizeContainer[0]),
+            width: math.min(layouts.fractionLoginRegisterSizeContainer * sizeWidth,
+                layouts.listLoginRegisterMaxSizeContainer[1]),
             child: LayoutBuilder(
               builder: (context, constraints) {
                 return Column(
@@ -84,7 +94,7 @@ class _LoginPageState extends State<LoginPage> {
                       child: Center(
                         child: Text(
                           'Sign In',
-                          style: LoginPage.styleHead,
+                          style: layouts.styleHead,
                         ),
                       ),
                     ),
@@ -101,23 +111,22 @@ class _LoginPageState extends State<LoginPage> {
                             child: TextField(
                               controller: _controllerUsername,
                               decoration: InputDecoration(
-                                labelText: 'Username',
-                                labelStyle: LoginPage.styleLabel,
+                                labelText: 'Email',
+                                labelStyle: layouts.styleLabel,
                                 border: OutlineInputBorder(),
                                 isDense: true,
                               ),
-                              style: LoginPage.styleLabel,
+                              style: layouts.styleLabel,
                               maxLength: 35,
                             ),
-                            maxWidth: constraints.maxWidth *
-                                LoginPage.fractionSizeLabel,
+                            maxWidth: constraints.maxWidth * layouts.fractionLoginRegisterSizeLabel,
                           ),
                           SizedBox(
                             width: 20,
                           ),
                           Icon(
                             Icons.email,
-                            size: LoginPage.sizeIcon,
+                            size: layouts.sizeLoginRegisterIcon,
                           ),
                         ],
                       ),
@@ -133,23 +142,22 @@ class _LoginPageState extends State<LoginPage> {
                               controller: _controllerPassword,
                               decoration: InputDecoration(
                                 labelText: 'Password',
-                                labelStyle: LoginPage.styleLabel,
+                                labelStyle: layouts.styleLabel,
                                 border: OutlineInputBorder(),
                                 isDense: true,
                               ),
-                              style: LoginPage.styleLabel,
+                              style: layouts.styleLabel,
                               maxLength: 20,
                               obscureText: true,
                             ),
-                            maxWidth: constraints.maxWidth *
-                                LoginPage.fractionSizeLabel,
+                            maxWidth: constraints.maxWidth * layouts.fractionLoginRegisterSizeLabel,
                           ),
                           SizedBox(
                             width: 20,
                           ),
                           Icon(
                             Icons.visibility_off,
-                            size: LoginPage.sizeIcon,
+                            size: layouts.sizeLoginRegisterIcon,
                           ),
                         ],
                       ),
@@ -164,38 +172,25 @@ class _LoginPageState extends State<LoginPage> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Spacer(
-                            flex: LoginPage.listFlexRow[0],
+                            flex: layouts.listLoginRegisterFlexRow[0],
                           ),
                           Expanded(
-                            flex: LoginPage.listFlexRow[1],
+                            flex: layouts.listLoginRegisterFlexRow[1],
                             child: FractionallySizedBox(
                               widthFactor: 0.8,
                               heightFactor: 0.8,
                               child: RaisedButton(
                                 child: Text(
                                   'Login',
-                                  style: LoginPage.styleButton,
+                                  style: layouts.styleButton,
                                 ),
                                 color: Colors.lightBlue,
-                                onPressed: () async {
-                                  DataSnapshot snapshot = await _databaseReference.once();
-                                  print('here');
-                                  print(snapshot.value);
-                                  print(_controllerUsername.text);
-                                  print(_controllerPassword.text);
-                                  if (true) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('Successful login!'),
-                                      ),
-                                    );
-                                  }
-                                },
+                                onPressed: onLoginButtonPressed,
                               ),
                             ),
                           ),
                           Expanded(
-                            flex: LoginPage.listFlexRow[2],
+                            flex: layouts.listLoginRegisterFlexRow[2],
                             child: RichText(
                               textAlign: TextAlign.center,
                               text: TextSpan(
@@ -213,7 +208,7 @@ class _LoginPageState extends State<LoginPage> {
                                     ),
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () {
-                                        print('Go to register page!');
+                                        Navigator.pushReplacementNamed(context, '/register-page');
                                       },
                                   ),
                                 ],

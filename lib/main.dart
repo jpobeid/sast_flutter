@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sast_project/pages/login_page.dart';
+import 'package:sast_project/functions/route_generator.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -9,5 +10,6 @@ void main() {
     ),
     title: 'SAST',
     home: LoginPage(),
+    onGenerateRoute: RouteGenerator.generateRoute,
   ));
 }
