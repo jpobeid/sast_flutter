@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-AppBar makeSastAppBar(String strPage) {
+AppBar makeSastAppBar(String strPage, bool canLogout) {
   const TextStyle styleTitle =
       TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold);
   return AppBar(
@@ -9,19 +9,14 @@ AppBar makeSastAppBar(String strPage) {
       'SAST - $strPage',
       style: styleTitle,
     ),
-    actions: [
-      FlatButton(
-        onPressed: () {},
-        child: Icon(Icons.login),
-      ),
-      FlatButton(
-        onPressed: () {},
-        child: Icon(Icons.logout),
-      ),
-      FlatButton(
-        onPressed: () {},
-        child: Icon(Icons.people),
-      ),
-    ],
+    actions: canLogout
+        ? [
+            FlatButton.icon(
+              icon: Icon(Icons.logout),
+              label: Text('Logout'),
+              onPressed: () {},
+            ),
+          ]
+        : [],
   );
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sast_project/pages/dashboard_page.dart';
 import 'package:sast_project/pages/login_page.dart';
 import 'package:sast_project/pages/register_page.dart';
 
@@ -10,6 +11,9 @@ class RouteGenerator {
         break;
       case RegisterPage.routeName:
         return MaterialPageRoute(builder: (_) => RegisterPage());
+        break;
+      case DashboardPage.routeName:
+        return MaterialPageRoute(builder: (_) => DashboardPage());
         break;
       default:
         return null;

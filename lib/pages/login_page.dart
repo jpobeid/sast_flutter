@@ -22,6 +22,8 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _controllerUsername = TextEditingController(text: '');
   final TextEditingController _controllerPassword = TextEditingController(text: '');
 
+  bool _isLoginButtonEnabled = true;
+
   @override
   void dispose() {
     _controllerUsername.dispose();
@@ -30,31 +32,50 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> onLoginButtonPressed() async {
-    http.Response response = await http.post(httpData.strUrlBase + LoginPage.strUrlAppendix + '/0',
-        headers: httpData.mapHttpHeader,
-        body: json.encode({
-          'email': _controllerUsername.text,
-          'hashedPass': crypto.sha256.convert(utf8.encode(_controllerPassword.text)).toString()
-        }));
-    if (response.statusCode == 200) {
+    setState(() {
+      _isLoginButtonEnabled = false;
+    });
+    http.Response response;
+    try {
+      response = await http.post(httpData.strUrlBase + LoginPage.strUrlAppendix + '/0',
+          headers: httpData.mapHttpHeader,
+          body: json.encode({
+            'email': _controllerUsername.text,
+            'hashedPass': crypto.sha256.convert(utf8.encode(_controllerPassword.text)).toString()
+          }));
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Successful login'),
-          backgroundColor: Colors.green,
-          duration: Duration(milliseconds: layouts.nLoginRegisterDurationSnackBarShort),
-        ),
-      );
-    } else {
-      setState(() {
-        _controllerPassword.clear();
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Incorrect login credentials or account not registered'),
+          content: Text('Network error: $e'),
           backgroundColor: Colors.red,
           duration: Duration(milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
         ),
       );
+    } finally {
+      setState(() {
+        _controllerPassword.clear();
+        _isLoginButtonEnabled = true;
+      });
+    }
+    if (response != null) {
+      if (response.statusCode == 200) {
+        Navigator.of(context).pushReplacementNamed('/dashboard-page');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Successful login'),
+            backgroundColor: Colors.green,
+            duration: Duration(milliseconds: layouts.nLoginRegisterDurationSnackBarShort),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Incorrect login credentials or account not registered'),
+            backgroundColor: Colors.red,
+            duration: Duration(milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
+          ),
+        );
+      }
     }
   }
 
@@ -64,7 +85,7 @@ class _LoginPageState extends State<LoginPage> {
     double sizeWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: makeSastAppBar('Login'),
+      appBar: makeSastAppBar('Login', false),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [
@@ -181,11 +202,11 @@ class _LoginPageState extends State<LoginPage> {
                               heightFactor: 0.8,
                               child: RaisedButton(
                                 child: Text(
-                                  'Login',
+                                  _isLoginButtonEnabled ? 'Login' : 'Wait...',
                                   style: layouts.styleButton,
                                 ),
                                 color: Colors.lightBlue,
-                                onPressed: onLoginButtonPressed,
+                                onPressed: _isLoginButtonEnabled ? onLoginButtonPressed : () => {},
                               ),
                             ),
                           ),

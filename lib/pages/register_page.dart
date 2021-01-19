@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:core';
 import 'dart:math' as math;
+import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart' as crypto;
 
@@ -13,11 +14,17 @@ import 'package:sast_project/widgets/sast_app_bar.dart';
 class RegisterPage extends StatefulWidget {
   static const String routeName = '/register-page';
   static const String strUrlAppendix = '/register';
+
   static const List<int> listFlexVertical = [3, 1, 3, 3, 1, 2, 2];
   static const Map<int, Map<int, String>> mapMapLabel = {
     0: {0: 'Email', 1: 'Token'},
     1: {0: 'Email', 1: 'Token'},
     2: {0: 'Password', 1: 'Re-enter password'},
+  };
+  static const Map<int, String> mapRegisterButtonLabel = {
+    0: 'Get token',
+    1: 'Enter',
+    2: 'Register'
   };
 
   //List will be input properties (maxLength, obscureText, Icon)
@@ -39,6 +46,7 @@ class _RegisterPageState extends State<RegisterPage> {
   int _nPhase = 0;
   bool _isUsernamePermitted = false;
   String _strUsername;
+  bool _isRegisterButtonEnabled = true;
 
   @override
   void dispose() {
@@ -50,54 +58,43 @@ class _RegisterPageState extends State<RegisterPage> {
   Future<void> onRegisterButtonPressed() async {
     switch (_nPhase) {
       case 0:
-        http.Response response = await http.post(
-          httpData.strUrlBase + RegisterPage.strUrlAppendix + '/$_nPhase',
-          headers: httpData.mapHttpHeader,
-          body: json.encode({'email': _controllerField0.text}),
-        );
-        _isUsernamePermitted = response.statusCode == 200;
-        if (_isUsernamePermitted) {
-          setState(() {
-            _nPhase++;
-          });
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                  '6-digit verification token sent to ${_controllerField0.text}'),
-              backgroundColor: Colors.green,
-              duration: Duration(milliseconds: 5000),
-            ),
-          );
-        } else if (response.statusCode == 401) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Email address unauthorized for access'),
-              backgroundColor: Colors.redAccent,
-              duration: Duration(
-                  milliseconds:
-                  layouts.nLoginRegisterDurationSnackBarLong),
-            ),
-          );
-        } else if (response.statusCode == 409) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Email address already registered'),
-              backgroundColor: Colors.redAccent,
-              duration: Duration(
-                  milliseconds:
-                  layouts.nLoginRegisterDurationSnackBarLong),
-            ),
-          );
+        http.Response response =
+            await trySendHttpPost(json.encode({'email': _controllerField0.text}));
+        if (response != null) {
+          _isUsernamePermitted = response.statusCode == 200;
+          if (_isUsernamePermitted) {
+            setState(() {
+              _nPhase++;
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('6-digit verification token sent to ${_controllerField0.text}'),
+                backgroundColor: Colors.green,
+                duration: Duration(milliseconds: 5000),
+              ),
+            );
+          } else if (response.statusCode == 401) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Email address unauthorized for access'),
+                backgroundColor: Colors.redAccent,
+                duration: Duration(milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
+              ),
+            );
+          } else if (response.statusCode == 409) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Email address already registered'),
+                backgroundColor: Colors.redAccent,
+                duration: Duration(milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
+              ),
+            );
+          }
         }
         break;
       case 1:
-        http.Response response = await http.post(
-            httpData.strUrlBase + RegisterPage.strUrlAppendix + '/$_nPhase',
-            headers: httpData.mapHttpHeader,
-            body: json.encode({
-              'email': _controllerField0.text,
-              'token': _controllerField1.text
-            }));
+        http.Response response = await trySendHttpPost(
+            json.encode({'email': _controllerField0.text, 'token': _controllerField1.text}));
         bool isTokenCorrect = response.statusCode == 200;
         if (isTokenCorrect) {
           setState(() {
@@ -111,35 +108,25 @@ class _RegisterPageState extends State<RegisterPage> {
             SnackBar(
               content: Text('Incorrect token'),
               backgroundColor: Colors.redAccent,
-              duration: Duration(
-                  milliseconds:
-                  layouts.nLoginRegisterDurationSnackBarLong),
+              duration: Duration(milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
             ),
           );
         }
         break;
       case 2:
-        bool isPasswordsMatching =
-            _controllerField0.text == _controllerField1.text;
+        bool isPasswordsMatching = _controllerField0.text == _controllerField1.text;
         bool isPasswordValid = _controllerField0.text.length > 6;
         if (isPasswordsMatching && isPasswordValid) {
-          String hashedPass = crypto.sha256
-              .convert(utf8.encode(_controllerField0.text))
-              .toString();
-          http.Response response = await http.post(
-              httpData.strUrlBase + RegisterPage.strUrlAppendix + '/$_nPhase',
-              headers: httpData.mapHttpHeader,
-              body: json.encode(
-                  {'email': _strUsername, 'hashedPass': hashedPass}));
+          String hashedPass = crypto.sha256.convert(utf8.encode(_controllerField0.text)).toString();
+          http.Response response =
+              await trySendHttpPost(json.encode({'email': _strUsername, 'hashedPass': hashedPass}));
           if (response.statusCode == 200) {
             Navigator.of(context).pushReplacementNamed('/login-page');
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('Account successfully created!'),
                 backgroundColor: Colors.green,
-                duration: Duration(
-                    milliseconds:
-                    layouts.nLoginRegisterDurationSnackBarLong),
+                duration: Duration(milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
               ),
             );
           }
@@ -148,9 +135,7 @@ class _RegisterPageState extends State<RegisterPage> {
             SnackBar(
               content: Text('Passwords not matching'),
               backgroundColor: Colors.redAccent,
-              duration: Duration(
-                  milliseconds:
-                  layouts.nLoginRegisterDurationSnackBarLong),
+              duration: Duration(milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
             ),
           );
         } else if (!isPasswordValid) {
@@ -158,14 +143,39 @@ class _RegisterPageState extends State<RegisterPage> {
             SnackBar(
               content: Text('Please choose stronger password'),
               backgroundColor: Colors.redAccent,
-              duration: Duration(
-                  milliseconds:
-                  layouts.nLoginRegisterDurationSnackBarLong),
+              duration: Duration(milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
             ),
           );
         }
         break;
     }
+  }
+
+  Future<http.Response> trySendHttpPost(dynamic httpBody) async {
+    http.Response response;
+    setState(() {
+      _isRegisterButtonEnabled = false;
+    });
+    try {
+      response = await http.post(
+        httpData.strUrlBase + RegisterPage.strUrlAppendix + '/$_nPhase',
+        headers: httpData.mapHttpHeader,
+        body: httpBody,
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Network error: $e'),
+          backgroundColor: Colors.red,
+          duration: Duration(milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
+        ),
+      );
+    } finally {
+      setState(() {
+        _isRegisterButtonEnabled = true;
+      });
+    }
+    return response;
   }
 
   @override
@@ -174,7 +184,7 @@ class _RegisterPageState extends State<RegisterPage> {
     double sizeWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: makeSastAppBar('Register'),
+      appBar: makeSastAppBar('Register', false),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [
@@ -302,11 +312,14 @@ class _RegisterPageState extends State<RegisterPage> {
                               heightFactor: 0.8,
                               child: RaisedButton(
                                 child: Text(
-                                  _nPhase < 2 ? 'Enter' : 'Register',
+                                  _isRegisterButtonEnabled
+                                      ? RegisterPage.mapRegisterButtonLabel[_nPhase]
+                                      : 'Wait...',
                                   style: layouts.styleButton,
                                 ),
                                 color: Colors.lightBlue,
-                                onPressed: onRegisterButtonPressed,
+                                onPressed:
+                                    _isRegisterButtonEnabled ? onRegisterButtonPressed : () => {},
                               ),
                             ),
                           ),
