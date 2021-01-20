@@ -59,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
     }
     if (response != null) {
       if (response.statusCode == 200) {
-        Navigator.of(context).pushReplacementNamed('/dashboard-page');
+        Navigator.of(context).pushReplacementNamed('/dashboard-page', arguments: [_controllerUsername.text, '###sampleJWT']);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Successful login'),
@@ -85,7 +85,7 @@ class _LoginPageState extends State<LoginPage> {
     double sizeWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: makeSastAppBar('Login', false),
+      appBar: makeSastAppBar(context, 'Login', false),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [
