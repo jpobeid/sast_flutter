@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:sast_project/data/dicom_data.dart' as dicoms;
 import 'package:sast_project/data/layout_data.dart' as layouts;
 
-class DashSelector extends StatefulWidget {
+class DashController extends StatefulWidget {
   final double heightPanel;
   final double widthPanel;
   final BoxDecoration decorPanel;
 
-  const DashSelector({Key key, this.heightPanel, this.widthPanel, this.decorPanel})
+  const DashController({Key key, this.heightPanel, this.widthPanel, this.decorPanel})
       : super(key: key);
 
   @override
-  _DashSelectorState createState() => _DashSelectorState();
+  _DashControllerState createState() => _DashControllerState();
 }
 
-class _DashSelectorState extends State<DashSelector> {
+class _DashControllerState extends State<DashController> {
   int _indexSite = 0;
   int _indexAlgo = 0;
 
@@ -62,8 +62,8 @@ class _DashSelectorState extends State<DashSelector> {
           RaisedButton(
             child: Text('Run', style: layouts.styleButton,),
             color: Colors.lightBlue,
-            onPressed: (){
-              print('processing!');
+            onPressed: () {
+              print('Processing!!');
             },
           ),
         ],

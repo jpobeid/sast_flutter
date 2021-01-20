@@ -3,6 +3,8 @@ import 'package:sast_project/pages/dashboard_page.dart';
 import 'package:sast_project/pages/login_page.dart';
 import 'package:sast_project/functions/route_generator.dart';
 
+import 'pages/dashboard_page.dart';
+
 void main() {
   runApp(MaterialApp(
     theme: ThemeData(
@@ -10,7 +12,7 @@ void main() {
       scaffoldBackgroundColor: Colors.black,
     ),
     title: 'SAST',
-    home: LoginPage(),
+    home: DashboardPage(),
     onGenerateRoute: RouteGenerator.generateRoute,
   ));
 }
