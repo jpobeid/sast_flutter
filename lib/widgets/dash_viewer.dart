@@ -24,7 +24,11 @@ class _DashViewerState extends State<DashViewer> {
       //   'ct_image.png',
       //   fit: BoxFit.cover,
       // ),
-      child: Image.memory(base64Decode(dicoms.strImage)),
+      child: GestureDetector(
+        onTap: (){
+
+        },
+      ),
     );
   }
 }

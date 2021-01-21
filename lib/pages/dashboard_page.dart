@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:sast_project/data/layout_data.dart' as layouts;
 import 'package:sast_project/widgets/dash_controller.dart';
+import 'package:sast_project/widgets/dash_navigator.dart';
 import 'package:sast_project/widgets/dash_viewer.dart';
 import 'package:sast_project/widgets/sast_app_bar.dart';
-import 'package:sast_project/widgets/dash_navigator.dart';
-import 'package:sast_project/data/layout_data.dart' as layouts;
 
 class DashboardPage extends StatefulWidget {
   static const String routeName = '/dashboard-page';
@@ -24,6 +24,9 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+
+  List<bool> _listPanelEnabled = [true, false, false];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,27 +60,29 @@ class _DashboardPageState extends State<DashboardPage> {
                       Positioned(
                         top: y0,
                         left: x0,
-                        child: DashController(
+                        child: DashNavigator(
                           heightPanel: canvasHeight * 0.5,
-                          widthPanel: canvasWidth * 0.3,
+                          widthPanel: canvasWidth,
                           decorPanel: layouts.decorDashPanel,
-                        ),
-                      ),
-                      Positioned(
-                        top: y0,
-                        left: x0 + canvasWidth * (0.3 + DashboardPage.fractionCanvasGap),
-                        child: DashViewer(
-                          heightPanel: canvasHeight * 0.5,
-                          widthPanel: canvasWidth * (1 - (0.3 + DashboardPage.fractionCanvasGap)),
-                          decorPanel: layouts.decorDashPanel,
+                          strUserEmail: '###email',
+                          strUserPin: '###pin',
                         ),
                       ),
                       Positioned(
                         top: y0 + canvasHeight * (0.5 + DashboardPage.fractionCanvasGap),
                         left: x0,
-                        child: DashNavigator(
+                        child: DashController(
                           heightPanel: canvasHeight * (1 - (0.5 + DashboardPage.fractionCanvasGap)),
-                          widthPanel: canvasWidth,
+                          widthPanel: canvasWidth * 0.3,
+                          decorPanel: layouts.decorDashPanel,
+                        ),
+                      ),
+                      Positioned(
+                        top: y0 + canvasHeight * (0.5 + DashboardPage.fractionCanvasGap),
+                        left: x0 + canvasWidth * (0.3 + DashboardPage.fractionCanvasGap),
+                        child: DashViewer(
+                          heightPanel: canvasHeight * (1 - (0.5 + DashboardPage.fractionCanvasGap)),
+                          widthPanel: canvasWidth * (1 - (0.3 + DashboardPage.fractionCanvasGap)),
                           decorPanel: layouts.decorDashPanel,
                         ),
                       ),
