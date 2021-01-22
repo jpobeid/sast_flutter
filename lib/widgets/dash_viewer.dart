@@ -1,13 +1,20 @@
-import 'package:flutter/material.dart';
 import 'dart:convert';
-import 'package:sast_project/data/dicom_data.dart' as dicoms;
+
+import 'package:flutter/material.dart';
 
 class DashViewer extends StatefulWidget {
   final double heightPanel;
   final double widthPanel;
   final BoxDecoration decorPanel;
+  final String strImageCode;
 
-  const DashViewer({Key key, this.heightPanel, this.widthPanel, this.decorPanel}) : super(key: key);
+  const DashViewer({
+    Key key,
+    this.heightPanel,
+    this.widthPanel,
+    this.decorPanel,
+    this.strImageCode,
+  }) : super(key: key);
 
   @override
   _DashViewerState createState() => _DashViewerState();
@@ -20,15 +27,9 @@ class _DashViewerState extends State<DashViewer> {
       height: widget.heightPanel,
       width: widget.widthPanel,
       decoration: widget.decorPanel,
-      // child: Image.asset(
-      //   'ct_image.png',
-      //   fit: BoxFit.cover,
-      // ),
-      child: GestureDetector(
-        onTap: (){
-
-        },
-      ),
+      child: widget.strImageCode != null
+          ? Image.memory(base64Decode(widget.strImageCode))
+          : Container(),
     );
   }
 }

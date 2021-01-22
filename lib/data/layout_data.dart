@@ -29,7 +29,9 @@ const int nLoginRegisterDurationSnackBarLong = 1500;
 //endregion LoginRegisterLayout
 
 //region DashLayout
-final BoxDecoration decorDashPanel = BoxDecoration(
-    color: Colors.grey[200], border: Border.all(color: Colors.amberAccent, width: 5));
+final BoxDecoration decorDashPanelEnabled = BoxDecoration(
+    color: Colors.grey[200], border: Border.all(color: Colors.green, width: 5));
+final BoxDecoration decorDashPanelDisabled = BoxDecoration(
+    color: Colors.grey[400], border: Border.all(color: Colors.redAccent, width: 5));
 
 //endregion Dashlayout

@@ -25,7 +25,20 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
 
-  List<bool> _listPanelEnabled = [true, false, false];
+  bool _isNavigatorComplete = false;
+  String _strImageCode;
+
+  void returnNavigatorStatus(bool isComplete) {
+    setState(() {
+      _isNavigatorComplete = isComplete;
+    });
+  }
+
+  void returnImageCode(String strImageCode) {
+    setState(() {
+      _strImageCode = strImageCode;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,9 +76,10 @@ class _DashboardPageState extends State<DashboardPage> {
                         child: DashNavigator(
                           heightPanel: canvasHeight * 0.5,
                           widthPanel: canvasWidth,
-                          decorPanel: layouts.decorDashPanel,
+                          decorPanel: _isNavigatorComplete ? layouts.decorDashPanelDisabled : layouts.decorDashPanelEnabled,
                           strUserEmail: '###email',
                           strUserPin: '###pin',
+                          callbackComplete: returnNavigatorStatus,
                         ),
                       ),
                       Positioned(
@@ -74,7 +88,9 @@ class _DashboardPageState extends State<DashboardPage> {
                         child: DashController(
                           heightPanel: canvasHeight * (1 - (0.5 + DashboardPage.fractionCanvasGap)),
                           widthPanel: canvasWidth * 0.3,
-                          decorPanel: layouts.decorDashPanel,
+                          decorPanel: _isNavigatorComplete ? layouts.decorDashPanelEnabled : layouts.decorDashPanelDisabled,
+                          isReady: _isNavigatorComplete,
+                          callbackStringCode: returnImageCode,
                         ),
                       ),
                       Positioned(
@@ -83,7 +99,8 @@ class _DashboardPageState extends State<DashboardPage> {
                         child: DashViewer(
                           heightPanel: canvasHeight * (1 - (0.5 + DashboardPage.fractionCanvasGap)),
                           widthPanel: canvasWidth * (1 - (0.3 + DashboardPage.fractionCanvasGap)),
-                          decorPanel: layouts.decorDashPanel,
+                          decorPanel: _isNavigatorComplete ? layouts.decorDashPanelEnabled : layouts.decorDashPanelDisabled,
+                          strImageCode: _strImageCode,
                         ),
                       ),
                     ],

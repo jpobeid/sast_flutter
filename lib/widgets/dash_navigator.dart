@@ -7,20 +7,24 @@ import 'package:sast_project/data/http_data.dart' as httpData;
 import 'package:sast_project/data/layout_data.dart' as layouts;
 
 class DashNavigator extends StatefulWidget {
+  static const strUrlAppendix = '/upload';
+
   final double heightPanel;
   final double widthPanel;
   final BoxDecoration decorPanel;
   final String strUserEmail;
   final String strUserPin;
+  final Function callbackComplete;
 
-  const DashNavigator(
-      {Key key,
-      this.heightPanel,
-      this.widthPanel,
-      this.decorPanel,
-      this.strUserEmail,
-      this.strUserPin})
-      : super(key: key);
+  const DashNavigator({
+    Key key,
+    this.heightPanel,
+    this.widthPanel,
+    this.decorPanel,
+    this.strUserEmail,
+    this.strUserPin,
+    this.callbackComplete,
+  }) : super(key: key);
 
   static const List<int> listFlexRow = [1, 2];
 
@@ -34,33 +38,32 @@ class _DashNavigatorState extends State<DashNavigator> {
   bool _canUpload = false;
   double _nProgress = 0;
 
-  Future<http.StreamedResponse> postStreamedRequest(
-      String strUrl, Uint8List listBytes) async {
+  Future<http.StreamedResponse> postStreamedRequest(String strUrl, Uint8List listBytes) async {
     if (widget.strUserEmail != null && widget.strUserPin != null) {
       try {
-        http.MultipartRequest request =
-            http.MultipartRequest('POST', Uri.parse(strUrl));
+        http.MultipartRequest request = http.MultipartRequest('POST', Uri.parse(strUrl));
         request.fields['email'] = widget.strUserEmail;
         request.fields['pin'] = widget.strUserPin;
-        request.files.add(http.MultipartFile.fromBytes('fileDicom', listBytes,
-            filename: 'slice.dcm'));
+        request.files
+            .add(http.MultipartFile.fromBytes('fileDicom', listBytes, filename: 'slice.dcm'));
         request.headers.addAll({'Content-type': 'multipart/form-data'});
         http.StreamedResponse response = await request.send();
         return response;
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Network error: $e'),
-            backgroundColor: Colors.redAccent,
-            duration: Duration(
-                milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
-          ),
-        );
         return null;
       }
     } else {
       return null;
     }
+  }
+
+  void resetNavigator() {
+    setState(() {
+      _resultFiles = null;
+      _listFileName = null;
+      _canUpload = false;
+      _nProgress = 0;
+    });
   }
 
   @override
@@ -92,10 +95,8 @@ class _DashNavigatorState extends State<DashNavigator> {
                       );
                       if (_resultFiles != null) {
                         setState(() {
-                          _listFileName =
-                              _resultFiles.files.map((e) => e.name).toList();
-                          if (_listFileName.every(
-                              (element) => element.split('.').last == 'dcm')) {
+                          _listFileName = _resultFiles.files.map((e) => e.name).toList();
+                          if (_listFileName.every((element) => element.split('.').last == 'dcm')) {
                             _canUpload = true;
                           } else {
                             _canUpload = false;
@@ -110,14 +111,7 @@ class _DashNavigatorState extends State<DashNavigator> {
                       'Reset Files',
                       style: layouts.styleButton,
                     ),
-                    onPressed: () {
-                      setState(() {
-                        _resultFiles = null;
-                        _listFileName = null;
-                        _canUpload = false;
-                        _nProgress = 0;
-                      });
-                    },
+                    onPressed: resetNavigator,
                   ),
                   FlatButton(
                     color: _canUpload ? Colors.green : Colors.redAccent,
@@ -127,41 +121,53 @@ class _DashNavigatorState extends State<DashNavigator> {
                     ),
                     onPressed: () async {
                       if (_canUpload) {
-                        int i = -1;
-                        _resultFiles.files.forEach((element) async {
-                          i++;
-                          http.StreamedResponse response =
-                              await postStreamedRequest(
-                                  httpData.strUrlBase + '/upload/$i',
-                                  element.bytes);
-                          if (response != null) {
-                            setState(() {
-                              _nProgress += (1 / _resultFiles.count);
-                            });
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content:
-                                    Text('Error: Was unable to upload files'),
-                                backgroundColor: Colors.redAccent,
-                                duration: Duration(
-                                    milliseconds: layouts
-                                        .nLoginRegisterDurationSnackBarLong),
-                              ),
-                            );
-                          }
+                        setState(() {
+                          _canUpload = false;
                         });
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                                '1 or more, only DICOM, files need to be selected'),
-                            backgroundColor: Colors.redAccent,
-                            duration: Duration(
-                                milliseconds:
-                                    layouts.nLoginRegisterDurationSnackBarLong),
-                          ),
-                        );
+                        bool isConnected = true;
+                        http.Response responseTest;
+                        try {
+                          responseTest =
+                              await http.get(httpData.strUrlBase + httpData.strUrlExtensionTest);
+                        } catch (e) {
+                          isConnected = false;
+                        }
+                        if (isConnected && responseTest.statusCode == 200) {
+                          int i = -1;
+                          _resultFiles.files.forEach((element) async {
+                            i++;
+                            http.StreamedResponse response = await postStreamedRequest(
+                                httpData.strUrlBase + httpData.strUrlExtensionDash + DashNavigator.strUrlAppendix + '/$i', element.bytes);
+                            if (response != null) {
+                              setState(() {
+                                _nProgress += (1 / _resultFiles.count);
+                                if ((_nProgress * 1000).round() / 1000 == 1) {
+                                  widget.callbackComplete(true);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Upload complete!'),
+                                      backgroundColor: Colors.green,
+                                      duration: Duration(
+                                          milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
+                                    ),
+                                  );
+                                }
+                              });
+                            }
+                          });
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Network error: Was unable to upload files'),
+                              backgroundColor: Colors.redAccent,
+                              duration: Duration(
+                                  milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
+                            ),
+                          );
+                        }
+                        setState(() {
+                          _canUpload = true;
+                        });
                       }
                     },
                   ),
@@ -184,8 +190,7 @@ class _DashNavigatorState extends State<DashNavigator> {
                 Expanded(
                   child: Scrollbar(
                     child: ListView.builder(
-                      itemCount:
-                          _listFileName != null ? _listFileName.length : 0,
+                      itemCount: _listFileName != null ? _listFileName.length : 0,
                       itemBuilder: (context, index) {
                         return Text(_listFileName[index]);
                       },

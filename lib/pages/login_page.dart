@@ -37,7 +37,7 @@ class _LoginPageState extends State<LoginPage> {
     });
     http.Response response;
     try {
-      response = await http.post(httpData.strUrlBase + LoginPage.strUrlAppendix + '/0',
+      response = await http.post(httpData.strUrlBase + httpData.strUrlExtensionUser + LoginPage.strUrlAppendix + '/0',
           headers: httpData.mapHttpHeader,
           body: json.encode({
             'email': _controllerUsername.text,

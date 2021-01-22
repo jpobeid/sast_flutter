@@ -158,7 +158,7 @@ class _RegisterPageState extends State<RegisterPage> {
     });
     try {
       response = await http.post(
-        httpData.strUrlBase + RegisterPage.strUrlAppendix + '/$_nPhase',
+        httpData.strUrlBase + httpData.strUrlExtensionUser + RegisterPage.strUrlAppendix + '/$_nPhase',
         headers: httpData.mapHttpHeader,
         body: httpBody,
       );
