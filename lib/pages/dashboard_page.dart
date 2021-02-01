@@ -26,17 +26,10 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
 
   bool _isNavigatorComplete = false;
-  String _strImageCode;
 
   void returnNavigatorStatus(bool isComplete) {
     setState(() {
       _isNavigatorComplete = isComplete;
-    });
-  }
-
-  void returnImageCode(String strImageCode) {
-    setState(() {
-      _strImageCode = strImageCode;
     });
   }
 
@@ -90,7 +83,6 @@ class _DashboardPageState extends State<DashboardPage> {
                           widthPanel: canvasWidth * 0.3,
                           decorPanel: _isNavigatorComplete ? layouts.decorDashPanelEnabled : layouts.decorDashPanelDisabled,
                           isReady: _isNavigatorComplete,
-                          callbackStringCode: returnImageCode,
                         ),
                       ),
                       Positioned(
@@ -100,7 +92,6 @@ class _DashboardPageState extends State<DashboardPage> {
                           heightPanel: canvasHeight * (1 - (0.5 + DashboardPage.fractionCanvasGap)),
                           widthPanel: canvasWidth * (1 - (0.3 + DashboardPage.fractionCanvasGap)),
                           decorPanel: _isNavigatorComplete ? layouts.decorDashPanelEnabled : layouts.decorDashPanelDisabled,
-                          strImageCode: _strImageCode,
                         ),
                       ),
                     ],

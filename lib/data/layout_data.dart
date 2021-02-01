@@ -3,14 +3,10 @@ import 'package:flutter/material.dart';
 //region GeneralLayout
 const TextStyle styleHead =
     TextStyle(color: Colors.black, fontSize: 34, fontWeight: FontWeight.bold);
-const TextStyle styleLabel = TextStyle(
-    color: Color.fromARGB(255, 80, 80, 80),
-    fontSize: 18,
-    fontWeight: FontWeight.normal);
-const TextStyle styleButton = TextStyle(
-    color: Color.fromARGB(255, 25, 25, 25),
-    fontSize: 18,
-    fontWeight: FontWeight.bold);
+const TextStyle styleLabel =
+    TextStyle(color: Color.fromARGB(255, 80, 80, 80), fontSize: 18, fontWeight: FontWeight.normal);
+const TextStyle styleButton =
+    TextStyle(color: Color.fromARGB(255, 25, 25, 25), fontSize: 18, fontWeight: FontWeight.bold);
 
 //endregion GeneralLayout
 
@@ -29,9 +25,15 @@ const int nLoginRegisterDurationSnackBarLong = 1500;
 //endregion LoginRegisterLayout
 
 //region DashLayout
-final BoxDecoration decorDashPanelEnabled = BoxDecoration(
-    color: Colors.grey[200], border: Border.all(color: Colors.green, width: 5));
-final BoxDecoration decorDashPanelDisabled = BoxDecoration(
-    color: Colors.grey[400], border: Border.all(color: Colors.redAccent, width: 5));
+final BoxDecoration decorDashPanelEnabled =
+    BoxDecoration(color: Colors.grey[200], border: Border.all(color: Colors.green, width: 5));
+final BoxDecoration decorDashPanelDisabled =
+    BoxDecoration(color: Colors.grey[400], border: Border.all(color: Colors.redAccent, width: 5));
 
+Divider makeDivider(double sizeThick, Color colorDivider) {
+  return Divider(
+    color: colorDivider,
+    thickness: sizeThick,
+  );
+}
 //endregion Dashlayout
