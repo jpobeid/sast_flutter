@@ -13,6 +13,7 @@ class DashboardPage extends StatefulWidget {
   static const Color colorFrame = Color.fromARGB(180, 255, 255, 255);
   static const double sizeFrameRadius = 20;
   static const double fractionCanvasGap = 0.02;
+  static const double fractionControllerWidth = 0.3;
 
   final String strUserEmail;
   final String strUserJwt;
@@ -77,21 +78,22 @@ class _DashboardPageState extends State<DashboardPage> {
                       ),
                       Positioned(
                         top: y0 + canvasHeight * (0.5 + DashboardPage.fractionCanvasGap),
-                        left: x0,
+                        left: x0 + canvasWidth * (1 - (DashboardPage.fractionControllerWidth)),
                         child: DashController(
                           heightPanel: canvasHeight * (1 - (0.5 + DashboardPage.fractionCanvasGap)),
-                          widthPanel: canvasWidth * 0.3,
+                          widthPanel: canvasWidth * DashboardPage.fractionControllerWidth,
                           decorPanel: _isNavigatorComplete ? layouts.decorDashPanelEnabled : layouts.decorDashPanelDisabled,
                           isReady: _isNavigatorComplete,
                         ),
                       ),
                       Positioned(
                         top: y0 + canvasHeight * (0.5 + DashboardPage.fractionCanvasGap),
-                        left: x0 + canvasWidth * (0.3 + DashboardPage.fractionCanvasGap),
+                        left: x0,
                         child: DashViewer(
                           heightPanel: canvasHeight * (1 - (0.5 + DashboardPage.fractionCanvasGap)),
-                          widthPanel: canvasWidth * (1 - (0.3 + DashboardPage.fractionCanvasGap)),
+                          widthPanel: canvasWidth * (1 - (DashboardPage.fractionControllerWidth) - DashboardPage.fractionCanvasGap),
                           decorPanel: _isNavigatorComplete ? layouts.decorDashPanelEnabled : layouts.decorDashPanelDisabled,
+                          isReady: _isNavigatorComplete,
                         ),
                       ),
                     ],

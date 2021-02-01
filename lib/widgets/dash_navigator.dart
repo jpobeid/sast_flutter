@@ -26,7 +26,7 @@ class DashNavigator extends StatefulWidget {
     this.callbackComplete,
   }) : super(key: key);
 
-  static const List<int> listFlexRow = [1, 2];
+  static const List<int> listFlexRow = [100, 1, 200];
 
   @override
   _DashNavigatorState createState() => _DashNavigatorState();
@@ -38,14 +38,16 @@ class _DashNavigatorState extends State<DashNavigator> {
   bool _canUpload = false;
   double _nProgress = 0;
 
-  Future<http.StreamedResponse> postStreamedRequest(String strUrl, Uint8List listBytes) async {
+  Future<http.StreamedResponse> postStreamedRequest(
+      String strUrl, Uint8List listBytes) async {
     if (widget.strUserEmail != null && widget.strUserPin != null) {
       try {
-        http.MultipartRequest request = http.MultipartRequest('POST', Uri.parse(strUrl));
+        http.MultipartRequest request =
+            http.MultipartRequest('POST', Uri.parse(strUrl));
         request.fields['email'] = widget.strUserEmail;
         request.fields['pin'] = widget.strUserPin;
-        request.files
-            .add(http.MultipartFile.fromBytes('fileDicom', listBytes, filename: 'slice.dcm'));
+        request.files.add(http.MultipartFile.fromBytes('fileDicom', listBytes,
+            filename: 'slice.dcm'));
         request.headers.addAll({'Content-type': 'multipart/form-data'});
         http.StreamedResponse response = await request.send();
         return response;
@@ -95,8 +97,10 @@ class _DashNavigatorState extends State<DashNavigator> {
                       );
                       if (_resultFiles != null) {
                         setState(() {
-                          _listFileName = _resultFiles.files.map((e) => e.name).toList();
-                          if (_listFileName.every((element) => element.split('.').last == 'dcm')) {
+                          _listFileName =
+                              _resultFiles.files.map((e) => e.name).toList();
+                          if (_listFileName.every(
+                              (element) => element.split('.').last == 'dcm')) {
                             _canUpload = true;
                           } else {
                             _canUpload = false;
@@ -127,8 +131,8 @@ class _DashNavigatorState extends State<DashNavigator> {
                         bool isConnected = true;
                         http.Response responseTest;
                         try {
-                          responseTest =
-                              await http.get(httpData.strUrlBase + httpData.strUrlExtensionTest);
+                          responseTest = await http.get(httpData.strUrlBase +
+                              httpData.strUrlExtensionTest);
                         } catch (e) {
                           isConnected = false;
                         }
@@ -136,8 +140,13 @@ class _DashNavigatorState extends State<DashNavigator> {
                           int i = -1;
                           _resultFiles.files.forEach((element) async {
                             i++;
-                            http.StreamedResponse response = await postStreamedRequest(
-                                httpData.strUrlBase + httpData.strUrlExtensionDash + DashNavigator.strUrlAppendix + '/$i', element.bytes);
+                            http.StreamedResponse response =
+                                await postStreamedRequest(
+                                    httpData.strUrlBase +
+                                        httpData.strUrlExtensionDash +
+                                        DashNavigator.strUrlAppendix +
+                                        '/$i',
+                                    element.bytes);
                             if (response != null) {
                               setState(() {
                                 _nProgress += (1 / _resultFiles.count);
@@ -148,7 +157,8 @@ class _DashNavigatorState extends State<DashNavigator> {
                                       content: Text('Upload complete!'),
                                       backgroundColor: Colors.green,
                                       duration: Duration(
-                                          milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
+                                          milliseconds: layouts
+                                              .nLoginRegisterDurationSnackBarLong),
                                     ),
                                   );
                                 }
@@ -158,10 +168,12 @@ class _DashNavigatorState extends State<DashNavigator> {
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Network error: Was unable to upload files'),
+                              content: Text(
+                                  'Network error: Was unable to upload files'),
                               backgroundColor: Colors.redAccent,
                               duration: Duration(
-                                  milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
+                                  milliseconds: layouts
+                                      .nLoginRegisterDurationSnackBarLong),
                             ),
                           );
                         }
@@ -181,16 +193,23 @@ class _DashNavigatorState extends State<DashNavigator> {
           ),
           Expanded(
             flex: DashNavigator.listFlexRow[1],
+            child: Container(
+              color: Colors.redAccent,
+            ),
+          ),
+          Expanded(
+            flex: DashNavigator.listFlexRow[2],
             child: Column(
               children: [
                 Text(
-                  'Selected DICOM List:',
+                  'Selected DICOM List (${_listFileName != null ? _listFileName.length : 0}):',
                   style: layouts.styleLabel,
                 ),
                 Expanded(
                   child: Scrollbar(
                     child: ListView.builder(
-                      itemCount: _listFileName != null ? _listFileName.length : 0,
+                      itemCount:
+                          _listFileName != null ? _listFileName.length : 0,
                       itemBuilder: (context, index) {
                         return Text(_listFileName[index]);
                       },
