@@ -59,7 +59,11 @@ class _LoginPageState extends State<LoginPage> {
     }
     if (response != null) {
       if (response.statusCode == 200) {
-        Navigator.of(context).pushReplacementNamed('/dashboard-page', arguments: [_controllerUsername.text, '###sampleJWT']);
+        Map<String, dynamic> mapResponse = json.decode(response.body);
+        String userEmail = _controllerUsername.text;
+        String userToken = mapResponse['token'];
+        String userPin = mapResponse['pin'];
+        Navigator.of(context).pushReplacementNamed('/dashboard-page', arguments: [userEmail, userToken, userPin]);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Successful login'),

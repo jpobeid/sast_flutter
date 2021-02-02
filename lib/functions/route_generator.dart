@@ -20,7 +20,8 @@ class RouteGenerator {
           return MaterialPageRoute(
               builder: (_) => DashboardPage(
                     strUserEmail: args[0],
-                    strUserJwt: args[1],
+                    strUserToken: args[1],
+                    strUserPin: args[2],
                   ));
         }
         break;

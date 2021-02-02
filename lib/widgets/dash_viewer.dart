@@ -10,6 +10,7 @@ class DashViewer extends StatefulWidget {
   final double widthPanel;
   final BoxDecoration decorPanel;
   final bool isReady;
+  final String strUserEmail;
 
   const DashViewer({
     Key key,
@@ -17,6 +18,7 @@ class DashViewer extends StatefulWidget {
     this.widthPanel,
     this.decorPanel,
     this.isReady,
+    this.strUserEmail,
   }) : super(key: key);
 
   static const List<int> listFlexColumn = [1, 6];
@@ -48,11 +50,29 @@ class _DashViewerState extends State<DashViewer> {
                     style: layouts.styleButton,
                   ),
                   onPressed: () async {
-                    http.Response response =
-                        await http.get(httpData.strUrlBase + httpData.strUrlExtensionDash + '/image/0');
-                    setState(() {
-                      _strImageCode = jsonDecode(response.body)[httpData.strBase64Key];
-                    });
+                    try {
+                      http.Response response = await http.get(
+                          httpData.strUrlBase +
+                              httpData.strUrlExtensionDash +
+                              httpData.strUrlSubExtensionImage +
+                              '/0',
+                          headers: {'email': widget.strUserEmail});
+                      setState(() {
+                        _strImageCode =
+                            jsonDecode(response.body)[httpData.strBase64Key];
+                      });
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                              'Network error: $e'),
+                          backgroundColor: Colors.redAccent,
+                          duration: Duration(
+                              milliseconds: layouts
+                                  .nLoginRegisterDurationSnackBarLong),
+                        ),
+                      );
+                    }
                   },
                 ),
               ),
@@ -60,7 +80,9 @@ class _DashViewerState extends State<DashViewer> {
             layouts.makeDivider(2, Colors.red),
             Expanded(
               flex: DashViewer.listFlexColumn[1],
-              child: _strImageCode != null ? Image.memory(base64Decode(_strImageCode)) : Container(),
+              child: _strImageCode != null
+                  ? Image.memory(base64Decode(_strImageCode))
+                  : Container(),
             )
           ],
         ),

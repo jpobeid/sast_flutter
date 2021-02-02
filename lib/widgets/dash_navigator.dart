@@ -7,12 +7,11 @@ import 'package:sast_project/data/http_data.dart' as httpData;
 import 'package:sast_project/data/layout_data.dart' as layouts;
 
 class DashNavigator extends StatefulWidget {
-  static const strUrlAppendix = '/upload';
-
   final double heightPanel;
   final double widthPanel;
   final BoxDecoration decorPanel;
   final String strUserEmail;
+  final String strUserToken;
   final String strUserPin;
   final Function callbackComplete;
 
@@ -22,6 +21,7 @@ class DashNavigator extends StatefulWidget {
     this.widthPanel,
     this.decorPanel,
     this.strUserEmail,
+    this.strUserToken,
     this.strUserPin,
     this.callbackComplete,
   }) : super(key: key);
@@ -45,6 +45,7 @@ class _DashNavigatorState extends State<DashNavigator> {
         http.MultipartRequest request =
             http.MultipartRequest('POST', Uri.parse(strUrl));
         request.fields['email'] = widget.strUserEmail;
+        request.fields['token'] = widget.strUserToken;
         request.fields['pin'] = widget.strUserPin;
         request.files.add(http.MultipartFile.fromBytes('fileDicom', listBytes,
             filename: 'slice.dcm'));
@@ -144,10 +145,11 @@ class _DashNavigatorState extends State<DashNavigator> {
                                 await postStreamedRequest(
                                     httpData.strUrlBase +
                                         httpData.strUrlExtensionDash +
-                                        DashNavigator.strUrlAppendix +
+                                        httpData.strUrlSubExtensionUpload +
                                         '/$i',
                                     element.bytes);
-                            if (response != null) {
+                            if (response != null &&
+                                response.statusCode == 200) {
                               setState(() {
                                 _nProgress += (1 / _resultFiles.count);
                                 if ((_nProgress * 1000).round() / 1000 == 1) {
@@ -211,7 +213,7 @@ class _DashNavigatorState extends State<DashNavigator> {
                       itemCount:
                           _listFileName != null ? _listFileName.length : 0,
                       itemBuilder: (context, index) {
-                        return Text(_listFileName[index]);
+                        return Text(_listFileName[index], textAlign: TextAlign.center,);
                       },
                     ),
                   ),

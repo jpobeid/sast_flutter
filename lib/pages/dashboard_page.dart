@@ -16,16 +16,18 @@ class DashboardPage extends StatefulWidget {
   static const double fractionControllerWidth = 0.3;
 
   final String strUserEmail;
-  final String strUserJwt;
+  final String strUserToken;
+  final String strUserPin;
 
-  const DashboardPage({Key key, this.strUserEmail, this.strUserJwt}) : super(key: key);
+  const DashboardPage(
+      {Key key, this.strUserEmail, this.strUserToken, this.strUserPin})
+      : super(key: key);
 
   @override
   _DashboardPageState createState() => _DashboardPageState();
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-
   bool _isNavigatorComplete = false;
 
   void returnNavigatorStatus(bool isComplete) {
@@ -37,7 +39,8 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: makeSastAppBar(context, 'Dashboard (${widget.strUserEmail})', true),
+      appBar:
+          makeSastAppBar(context, 'Dashboard (${widget.strUserEmail})', true),
       body: Stack(
         children: [
           Container(
@@ -50,16 +53,21 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
           Center(
             child: Container(
-              height: MediaQuery.of(context).size.height * DashboardPage.fractionFrameHeight,
-              width: MediaQuery.of(context).size.width * DashboardPage.fractionFrameWidth,
+              height: MediaQuery.of(context).size.height *
+                  DashboardPage.fractionFrameHeight,
+              width: MediaQuery.of(context).size.width *
+                  DashboardPage.fractionFrameWidth,
               decoration: BoxDecoration(
                 color: DashboardPage.colorFrame,
-                borderRadius: BorderRadius.circular(DashboardPage.sizeFrameRadius),
+                borderRadius:
+                    BorderRadius.circular(DashboardPage.sizeFrameRadius),
               ),
               child: LayoutBuilder(
                 builder: (context, constraints) {
-                  double canvasHeight = constraints.maxHeight - 2 * DashboardPage.sizeFrameRadius;
-                  double canvasWidth = constraints.maxWidth - 2 * DashboardPage.sizeFrameRadius;
+                  double canvasHeight =
+                      constraints.maxHeight - 2 * DashboardPage.sizeFrameRadius;
+                  double canvasWidth =
+                      constraints.maxWidth - 2 * DashboardPage.sizeFrameRadius;
                   double x0 = DashboardPage.sizeFrameRadius;
                   double y0 = DashboardPage.sizeFrameRadius;
                   return Stack(
@@ -70,30 +78,51 @@ class _DashboardPageState extends State<DashboardPage> {
                         child: DashNavigator(
                           heightPanel: canvasHeight * 0.5,
                           widthPanel: canvasWidth,
-                          decorPanel: _isNavigatorComplete ? layouts.decorDashPanelDisabled : layouts.decorDashPanelEnabled,
-                          strUserEmail: '###email',
-                          strUserPin: '###pin',
+                          decorPanel: _isNavigatorComplete
+                              ? layouts.decorDashPanelDisabled
+                              : layouts.decorDashPanelEnabled,
+                          strUserEmail: widget.strUserEmail,
+                          strUserToken: widget.strUserToken,
+                          strUserPin: widget.strUserPin,
                           callbackComplete: returnNavigatorStatus,
                         ),
                       ),
                       Positioned(
-                        top: y0 + canvasHeight * (0.5 + DashboardPage.fractionCanvasGap),
-                        left: x0 + canvasWidth * (1 - (DashboardPage.fractionControllerWidth)),
+                        top: y0 +
+                            canvasHeight *
+                                (0.5 + DashboardPage.fractionCanvasGap),
+                        left: x0 +
+                            canvasWidth *
+                                (1 - (DashboardPage.fractionControllerWidth)),
                         child: DashController(
-                          heightPanel: canvasHeight * (1 - (0.5 + DashboardPage.fractionCanvasGap)),
-                          widthPanel: canvasWidth * DashboardPage.fractionControllerWidth,
-                          decorPanel: _isNavigatorComplete ? layouts.decorDashPanelEnabled : layouts.decorDashPanelDisabled,
+                          heightPanel: canvasHeight *
+                              (1 - (0.5 + DashboardPage.fractionCanvasGap)),
+                          widthPanel: canvasWidth *
+                              DashboardPage.fractionControllerWidth,
+                          decorPanel: _isNavigatorComplete
+                              ? layouts.decorDashPanelEnabled
+                              : layouts.decorDashPanelDisabled,
                           isReady: _isNavigatorComplete,
+                          strUserEmail: widget.strUserEmail,
                         ),
                       ),
                       Positioned(
-                        top: y0 + canvasHeight * (0.5 + DashboardPage.fractionCanvasGap),
+                        top: y0 +
+                            canvasHeight *
+                                (0.5 + DashboardPage.fractionCanvasGap),
                         left: x0,
                         child: DashViewer(
-                          heightPanel: canvasHeight * (1 - (0.5 + DashboardPage.fractionCanvasGap)),
-                          widthPanel: canvasWidth * (1 - (DashboardPage.fractionControllerWidth) - DashboardPage.fractionCanvasGap),
-                          decorPanel: _isNavigatorComplete ? layouts.decorDashPanelEnabled : layouts.decorDashPanelDisabled,
+                          heightPanel: canvasHeight *
+                              (1 - (0.5 + DashboardPage.fractionCanvasGap)),
+                          widthPanel: canvasWidth *
+                              (1 -
+                                  (DashboardPage.fractionControllerWidth) -
+                                  DashboardPage.fractionCanvasGap),
+                          decorPanel: _isNavigatorComplete
+                              ? layouts.decorDashPanelEnabled
+                              : layouts.decorDashPanelDisabled,
                           isReady: _isNavigatorComplete,
+                          strUserEmail: widget.strUserEmail,
                         ),
                       ),
                     ],

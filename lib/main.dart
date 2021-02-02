@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sast_project/functions/route_generator.dart';
-import 'package:sast_project/pages/dashboard_page.dart';
+import 'package:sast_project/pages/login_page.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -9,7 +9,7 @@ void main() {
       scaffoldBackgroundColor: Colors.black,
     ),
     title: 'SAST',
-    home: DashboardPage(),
+    home: LoginPage(),
     onGenerateRoute: RouteGenerator.generateRoute,
   ));
 }
