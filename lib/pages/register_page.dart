@@ -184,7 +184,7 @@ class _RegisterPageState extends State<RegisterPage> {
     double sizeWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: makeSastAppBar(context, 'Register', false),
+      appBar: makeSastAppBar(context, 'Register', null, false),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [

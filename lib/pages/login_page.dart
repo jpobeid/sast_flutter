@@ -89,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
     double sizeWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: makeSastAppBar(context, 'Login', false),
+      appBar: makeSastAppBar(context, 'Login', null, false),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [

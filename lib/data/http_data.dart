@@ -5,6 +5,7 @@ const String strUrlExtensionDash = '/dash';
 const String strUrlSubExtensionUpload = '/upload';
 const String strUrlSubExtensionImage = '/image';
 const String strUrlSubExtensionProcess = '/process';
+const String strUrlSubExtensionLogout = '/logout';
 
 const Map<String, String> mapHttpHeader = {"Content-Type": "application/json"};
 
