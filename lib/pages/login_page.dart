@@ -183,25 +183,6 @@ class _LoginPageState extends State<LoginPage> {
                         ],
                       ),
                     ),
-                    Flexible(
-                      child: TextButton(
-                        child: Text('Test'),
-                        onPressed: () async {
-                          String strUrlTest = httpData.strUrlBase +
-                              httpData.strUrlExtensionTest;
-                          http.Response response = await http.get(strUrlTest, headers: httpData.mapHttpHeader);
-                          if (response.statusCode == 200) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Successful send!'))
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Failed send...'))
-                            );
-                          }
-                        },
-                      ),
-                    ),
                     Expanded(
                       flex: LoginPage.listFlexVertical[3],
                       child: Row(
