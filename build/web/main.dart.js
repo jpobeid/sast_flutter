@@ -63566,7 +63566,7 @@ j=$.aeM()
 i=n.e.a.a
 h=t.O
 s=6
-return P.a3(G.ala("http://localhost:5000/user/login/0",C.aj.eT(P.ap(["email",k,"hashedPass",J.cf(j.bm(C.D.gdT().bm(i)))],h,h)),C.o4),$async$uL)
+return P.a3(G.ala("http://50.116.6.125:5000/user/login/0",C.aj.eT(P.ap(["email",k,"hashedPass",J.cf(j.bm(C.D.gdT().bm(i)))],h,h)),C.o4),$async$uL)
 case 6:m=a0
 o.push(5)
 s=4
@@ -63635,7 +63635,7 @@ var $async$$0=P.X(function(a,b){if(a===1)return P.a_(b,r)
 while(true)switch(s){case 0:p=q.a
 o=t.q
 s=2
-return P.a3(G.OM("http://localhost:5000/test",C.o4),$async$$0)
+return P.a3(G.OM("http://50.116.6.125:5000/test",C.o4),$async$$0)
 case 2:if(b.b===200){p=p.F(o)
 p.toString
 p.f.cI(N.cR(null,null,null,null,L.b3("Successful send!",null,null,null,null,null,null),C.r6,null,null,null,null,null,null,null))}else{p=p.F(o)
@@ -63724,7 +63724,7 @@ s=p}while(true)switch(s){case 0:i=null
 m.a7(new M.a7R(m))
 p=4
 s=7
-return P.a3(G.ala("http://localhost:5000/user/register"+("/"+m.f),a,C.o4),$async$n5)
+return P.a3(G.ala("http://50.116.6.125:5000/user/register"+("/"+m.f),a,C.o4),$async$n5)
 case 7:i=c
 n.push(6)
 s=5
@@ -63826,7 +63826,7 @@ case 2:h.a7(new D.a4q(h))
 q=5
 k=t.O
 s=8
-return P.a3(G.OM("http://localhost:5000/dash/process"+("/"+h.d),P.ap(["email",h.a.r],k,k)),$async$$0)
+return P.a3(G.OM("http://50.116.6.125:5000/dash/process"+("/"+h.d),P.ap(["email",h.a.r],k,k)),$async$$0)
 case 8:m=b
 k=n.b
 j=t.q
@@ -63999,7 +63999,7 @@ m=!0
 l=null
 q=5
 s=8
-return P.a3(G.OM("http://localhost:5000/test",null),$async$$0)
+return P.a3(G.OM("http://50.116.6.125:5000/test",null),$async$$0)
 case 8:l=b
 q=1
 s=7
@@ -64031,7 +64031,7 @@ m=q.a;++m.a
 X.ayn(n)
 p=q.b
 s=2
-return P.a3(p.uW("http://localhost:5000/dash/upload"+("/"+m.a),n),$async$$1)
+return P.a3(p.uW("http://50.116.6.125:5000/dash/upload"+("/"+m.a),n),$async$$1)
 case 2:o=c
 if(o!=null&&o.b===200)p.a7(new B.a4y(p,q.c))
 return P.a0(null,r)}})
@@ -64070,7 +64070,7 @@ s=q}while(true)switch(s){case 0:q=3
 k=n.a
 j=t.O
 s=6
-return P.a3(G.OM("http://localhost:5000/dash/image/0",P.ap(["email",k.a.r],j,j)),$async$$0)
+return P.a3(G.OM("http://50.116.6.125:5000/dash/image/0",P.ap(["email",k.a.r],j,j)),$async$$0)
 case 6:m=b
 k.a7(new L.a4J(k,m))
 q=1
@@ -64101,7 +64101,7 @@ while(true)switch(s){case 0:p=t.O
 o=q.b
 n=t.q
 s=2
-return P.a3(G.OM("http://localhost:5000/dash/logout/0",P.ap(["email",q.a],p,p)),$async$$0)
+return P.a3(G.OM("http://50.116.6.125:5000/dash/logout/0",P.ap(["email",q.a],p,p)),$async$$0)
 case 2:if(b.b===200){p=t._
 K.kG(o).ML("/login-page",p,p)
 n=o.F(n)
