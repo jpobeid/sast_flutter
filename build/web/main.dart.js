@@ -63563,7 +63563,7 @@ j=$.aeL()
 i=n.e.a.a
 h=t.O
 s=6
-return P.a4(G.al9("http://localhost:5000/user/login/0",C.aj.eT(P.ap(["email",k,"hashedPass",J.cf(j.bm(C.D.gdT().bm(i)))],h,h)),C.t1),$async$uL)
+return P.a4(G.al9("http://50.116.6.125:5000/user/login/0",C.aj.eT(P.ap(["email",k,"hashedPass",J.cf(j.bm(C.D.gdT().bm(i)))],h,h)),C.t1),$async$uL)
 case 6:m=a0
 o.push(5)
 s=4
@@ -63706,7 +63706,7 @@ s=p}while(true)switch(s){case 0:i=null
 m.a7(new M.a7O(m))
 p=4
 s=7
-return P.a4(G.al9("http://localhost:5000/user/register"+("/"+m.f),a,C.t1),$async$n5)
+return P.a4(G.al9("http://50.116.6.125:5000/user/register"+("/"+m.f),a,C.t1),$async$n5)
 case 7:i=c
 n.push(6)
 s=5
@@ -63808,7 +63808,7 @@ case 2:h.a7(new D.a4o(h))
 q=5
 k=t.O
 s=8
-return P.a4(G.aaS("http://localhost:5000/dash/process"+("/"+h.d),P.ap(["email",h.a.r],k,k)),$async$$0)
+return P.a4(G.aaS("http://50.116.6.125:5000/dash/process"+("/"+h.d),P.ap(["email",h.a.r],k,k)),$async$$0)
 case 8:m=b
 k=n.b
 j=t.J
@@ -63981,7 +63981,7 @@ m=!0
 l=null
 q=5
 s=8
-return P.a4(G.aaS("http://localhost:5000/test",null),$async$$0)
+return P.a4(G.aaS("http://50.116.6.125:5000/test",null),$async$$0)
 case 8:l=b
 q=1
 s=7
@@ -64013,7 +64013,7 @@ m=q.a;++m.a
 X.aym(n)
 p=q.b
 s=2
-return P.a4(p.uW("http://localhost:5000/dash/upload"+("/"+m.a),n),$async$$1)
+return P.a4(p.uW("http://50.116.6.125:5000/dash/upload"+("/"+m.a),n),$async$$1)
 case 2:o=c
 if(o!=null&&o.b===200)p.a7(new B.a4w(p,q.c))
 return P.a0(null,r)}})
@@ -64052,7 +64052,7 @@ s=q}while(true)switch(s){case 0:q=3
 k=n.a
 j=t.O
 s=6
-return P.a4(G.aaS("http://localhost:5000/dash/image/0",P.ap(["email",k.a.r],j,j)),$async$$0)
+return P.a4(G.aaS("http://50.116.6.125:5000/dash/image/0",P.ap(["email",k.a.r],j,j)),$async$$0)
 case 6:m=b
 k.a7(new L.a4H(k,m))
 q=1
@@ -64083,7 +64083,7 @@ while(true)switch(s){case 0:p=t.O
 o=q.b
 n=t.J
 s=2
-return P.a4(G.aaS("http://localhost:5000/dash/logout/0",P.ap(["email",q.a],p,p)),$async$$0)
+return P.a4(G.aaS("http://50.116.6.125:5000/dash/logout/0",P.ap(["email",q.a],p,p)),$async$$0)
 case 2:if(b.b===200){p=t._
 K.kG(o).ML("/login-page",p,p)
 n=o.F(n)
