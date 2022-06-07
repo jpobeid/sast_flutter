@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:sast_project/data/http_data.dart' as httpData;
 import 'package:sast_project/data/layout_data.dart' as layouts;
+import 'package:sast_project/functions/dicom_functions.dart' as funcDicom;
 
 class DashNavigator extends StatefulWidget {
   final double heightPanel;
@@ -28,6 +29,8 @@ class DashNavigator extends StatefulWidget {
   }) : super(key: key);
 
   static const List<int> listFlexRow = [100, 1, 200];
+  static const double sizeButtonPadding = 15;
+  static const int nMinListLength = 20;
 
   @override
   _DashNavigatorState createState() => _DashNavigatorState();
@@ -36,6 +39,7 @@ class DashNavigator extends StatefulWidget {
 class _DashNavigatorState extends State<DashNavigator> {
   FilePickerResult _resultFiles;
   List<String> _listFileName;
+  List<String> _listStudyInfo = [];
   bool _canUpload = false;
   double _nProgress = 0;
 
@@ -65,9 +69,48 @@ class _DashNavigatorState extends State<DashNavigator> {
     setState(() {
       _resultFiles = null;
       _listFileName = null;
+      _listStudyInfo.clear();
       _canUpload = false;
       _nProgress = 0;
     });
+  }
+
+  bool areFilesProper() {
+    // To check if all list members reference same patient ID, accession # and series #
+    bool areAllProper = true;
+    String strPatientID =
+        funcDicom.readDicomTag(_resultFiles.files.first.bytes, 'id');
+    String strAccessionNumber =
+        funcDicom.readDicomTag(_resultFiles.files.first.bytes, 'accession');
+    String strSeriesNumber =
+        funcDicom.readDicomTag(_resultFiles.files.first.bytes, 'series');
+    _resultFiles.files.forEach((element) {
+      if (!(funcDicom.readDicomTag(element.bytes, 'id') == strPatientID &&
+          funcDicom.readDicomTag(element.bytes, 'accession') ==
+              strAccessionNumber &&
+          funcDicom.readDicomTag(element.bytes, 'series') == strSeriesNumber)) {
+        areAllProper = false;
+      }
+    });
+    if (areAllProper) {
+      _listStudyInfo.clear();
+      _listStudyInfo
+          .addAll([strPatientID, strAccessionNumber, strSeriesNumber]);
+    } else {
+      _listStudyInfo.clear();
+    }
+    return areAllProper;
+  }
+
+  void showErrorMessage(String strError) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(strError),
+        backgroundColor: Colors.red,
+        duration:
+            Duration(milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
+      ),
+    );
   }
 
   @override
@@ -101,11 +144,25 @@ class _DashNavigatorState extends State<DashNavigator> {
                         setState(() {
                           _listFileName =
                               _resultFiles.files.map((e) => e.name).toList();
-                          if (_listFileName.every(
-                              (element) => element.split('.').last == 'dcm')) {
+                          bool isListAllDicom = _listFileName.every(
+                              (element) => element.split('.').last == 'dcm');
+                          bool isListProper = areFilesProper() &&
+                              _listFileName.length >=
+                                  DashNavigator.nMinListLength &&
+                              isListAllDicom;
+                          if (isListProper) {
                             _canUpload = true;
+                          } else if (_listFileName.length <
+                              DashNavigator.nMinListLength) {
+                            _canUpload = false;
+                            showErrorMessage(
+                                'List must have ${DashNavigator.nMinListLength} or more entries...');
+                          } else if (!isListAllDicom) {
+                            _canUpload = false;
+                            showErrorMessage('List is not all DICOM files...');
                           } else {
                             _canUpload = false;
+                            showErrorMessage('DICOMs are not matching...');
                           }
                         });
                       }
@@ -144,14 +201,16 @@ class _DashNavigatorState extends State<DashNavigator> {
                         if (isConnected && responseTest.statusCode == 200) {
                           int i = -1;
                           _resultFiles.files.forEach((element) async {
+                            List<int> listBytes = element.bytes;
                             i++;
+                            funcDicom.makeAnonListBytes(listBytes);
                             http.StreamedResponse response =
                                 await postStreamedRequest(
                                     httpData.urlBase +
                                         httpData.urlExtensionDash +
                                         httpData.urlSubExtensionUpload +
                                         '/$i',
-                                    element.bytes);
+                                    listBytes);
                             if (response != null &&
                                 response.statusCode == 200) {
                               setState(() {
@@ -193,16 +252,8 @@ class _DashNavigatorState extends State<DashNavigator> {
                             }
                           });
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                  'Network error: Was unable to upload files'),
-                              backgroundColor: Colors.redAccent,
-                              duration: Duration(
-                                  milliseconds: layouts
-                                      .nLoginRegisterDurationSnackBarLong),
-                            ),
-                          );
+                          showErrorMessage(
+                              'Network error: Was unable to upload files');
                         }
                         setState(() {
                           _canUpload = true;
@@ -232,6 +283,10 @@ class _DashNavigatorState extends State<DashNavigator> {
                   'Selected DICOM List (${_listFileName != null ? _listFileName.length : 0}):',
                   style: layouts.styleLabel,
                 ),
+                Divider(
+                  color: Colors.redAccent,
+                  thickness: 3,
+                ),
                 Expanded(
                   child: Scrollbar(
                     child: ListView.builder(
@@ -245,6 +300,16 @@ class _DashNavigatorState extends State<DashNavigator> {
                       },
                     ),
                   ),
+                ),
+                Divider(
+                  color: Colors.redAccent,
+                  thickness: 3,
+                ),
+                Text(
+                  _listStudyInfo.length == 3
+                      ? 'PatientID: ${_listStudyInfo[0]}, Accession: ${_listStudyInfo[1]}, Series: ${_listStudyInfo[2]}'
+                      : '',
+                  style: layouts.styleLabel,
                 ),
               ],
             ),

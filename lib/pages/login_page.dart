@@ -98,11 +98,17 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    double sizeHeight = MediaQuery.of(context).size.height;
-    double sizeWidth = MediaQuery.of(context).size.width;
+    double sizeHeight = MediaQuery
+        .of(context)
+        .size
+        .height;
+    double sizeWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
 
     return Scaffold(
-      appBar: makeSastAppBar(context, 'Login', false),
+      appBar: makeSastAppBar(context, 'Login', null, false),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -113,8 +119,14 @@ class _LoginPageState extends State<LoginPage> {
                 layouts.colorLoginRegisterGradient1,
               ]),
         ),
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
+        height: MediaQuery
+            .of(context)
+            .size
+            .height,
+        width: MediaQuery
+            .of(context)
+            .size
+            .width,
         child: Center(
           child: Container(
             decoration: BoxDecoration(
@@ -231,7 +243,6 @@ class _LoginPageState extends State<LoginPage> {
                                   _isLoginButtonEnabled ? 'Login' : 'Wait...',
                                   style: layouts.styleButton,
                                 ),
-                                // color: Colors.lightBlue,
                                 onPressed: _isLoginButtonEnabled
                                     ? onLoginButtonPressed
                                     : () => {},

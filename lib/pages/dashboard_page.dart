@@ -40,7 +40,7 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar:
-          makeSastAppBar(context, 'Dashboard (${widget.strUserEmail})', true),
+          makeSastAppBar(context, 'Dashboard', widget.strUserEmail, true),
       body: Stack(
         children: [
           Container(
