@@ -26,9 +26,9 @@ AppBar makeSastAppBar(BuildContext context, String strPage, String strUserEmail,
               style: TextButton.styleFrom(
                   padding: EdgeInsets.symmetric(horizontal: 30)),
               onPressed: () async {
-                String urlLogout = httpData.strUrlBase +
-                    httpData.strUrlExtensionDash +
-                    httpData.strUrlSubExtensionLogout +
+                String urlLogout = httpData.urlBase +
+                    httpData.urlExtensionDash +
+                    httpData.urlSubExtensionLogout +
                     '/0';
                 https.Response response = await https
                     .get(urlLogout, headers: {'email': strUserEmail});
