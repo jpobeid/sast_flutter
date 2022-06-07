@@ -56,12 +56,12 @@ class _DashControllerState extends State<DashController> {
               },
             ),
             layouts.makeDivider(2, Colors.red),
-            FlatButton(
+            TextButton(
+              style: TextButton.styleFrom(backgroundColor: Colors.green, primary: Colors.black),
               child: Text(
                 'Run',
                 style: layouts.styleButton,
               ),
-              color: _isRunnable ? Colors.green : Colors.redAccent,
               onPressed: () async {
                 if (_isRunnable) {
                   setState(() {
@@ -69,9 +69,9 @@ class _DashControllerState extends State<DashController> {
                   });
                   try {
                     http.Response response = await http.get(
-                        httpData.strUrlBase +
-                            httpData.strUrlExtensionDash +
-                            httpData.strUrlSubExtensionProcess +
+                        httpData.urlBase +
+                            httpData.urlExtensionDash +
+                            httpData.urlSubExtensionProcess +
                             '/$_indexSite',
                         headers: {'email': widget.strUserEmail});
                     if (response.statusCode != 200) {

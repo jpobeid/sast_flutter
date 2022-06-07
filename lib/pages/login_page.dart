@@ -19,8 +19,10 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _controllerUsername = TextEditingController(text: '');
-  final TextEditingController _controllerPassword = TextEditingController(text: '');
+  final TextEditingController _controllerUsername =
+      TextEditingController(text: '');
+  final TextEditingController _controllerPassword =
+      TextEditingController(text: '');
 
   bool _isLoginButtonEnabled = true;
 
@@ -37,18 +39,25 @@ class _LoginPageState extends State<LoginPage> {
     });
     http.Response response;
     try {
-      response = await http.post(httpData.strUrlBase + httpData.strUrlExtensionUser + LoginPage.strUrlAppendix + '/0',
+      response = await http.post(
+          httpData.urlBase +
+              httpData.urlExtensionUser +
+              LoginPage.strUrlAppendix +
+              '/0',
           headers: httpData.mapHttpHeader,
           body: json.encode({
             'email': _controllerUsername.text,
-            'hashedPass': crypto.sha256.convert(utf8.encode(_controllerPassword.text)).toString()
+            'hashedPass': crypto.sha256
+                .convert(utf8.encode(_controllerPassword.text))
+                .toString()
           }));
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Network error: $e'),
           backgroundColor: Colors.red,
-          duration: Duration(milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
+          duration: Duration(
+              milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
         ),
       );
     } finally {
@@ -63,20 +72,24 @@ class _LoginPageState extends State<LoginPage> {
         String userEmail = _controllerUsername.text;
         String userToken = mapResponse['token'];
         String userPin = mapResponse['pin'];
-        Navigator.of(context).pushReplacementNamed('/dashboard-page', arguments: [userEmail, userToken, userPin]);
+        Navigator.of(context).pushReplacementNamed('/dashboard-page',
+            arguments: [userEmail, userToken, userPin]);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Successful login'),
             backgroundColor: Colors.green,
-            duration: Duration(milliseconds: layouts.nLoginRegisterDurationSnackBarShort),
+            duration: Duration(
+                milliseconds: layouts.nLoginRegisterDurationSnackBarShort),
           ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Incorrect login credentials or account not registered'),
+            content:
+                Text('Incorrect login credentials or account not registered'),
             backgroundColor: Colors.red,
-            duration: Duration(milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
+            duration: Duration(
+                milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
           ),
         );
       }
@@ -92,10 +105,13 @@ class _LoginPageState extends State<LoginPage> {
       appBar: makeSastAppBar(context, 'Login', false),
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [
-            layouts.colorLoginRegisterGradient0,
-            layouts.colorLoginRegisterGradient1,
-          ]),
+          gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                layouts.colorLoginRegisterGradient0,
+                layouts.colorLoginRegisterGradient1,
+              ]),
         ),
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
@@ -103,11 +119,14 @@ class _LoginPageState extends State<LoginPage> {
           child: Container(
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(layouts.sizeLoginRegisterContainerRadius),
+              borderRadius: BorderRadius.circular(
+                  layouts.sizeLoginRegisterContainerRadius),
             ),
-            height: math.min(layouts.fractionLoginRegisterSizeContainer * sizeHeight,
+            height: math.min(
+                layouts.fractionLoginRegisterSizeContainer * sizeHeight,
                 layouts.listLoginRegisterMaxSizeContainer[0]),
-            width: math.min(layouts.fractionLoginRegisterSizeContainer * sizeWidth,
+            width: math.min(
+                layouts.fractionLoginRegisterSizeContainer * sizeWidth,
                 layouts.listLoginRegisterMaxSizeContainer[1]),
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -144,7 +163,8 @@ class _LoginPageState extends State<LoginPage> {
                               style: layouts.styleLabel,
                               maxLength: 35,
                             ),
-                            maxWidth: constraints.maxWidth * layouts.fractionLoginRegisterSizeLabel,
+                            maxWidth: constraints.maxWidth *
+                                layouts.fractionLoginRegisterSizeLabel,
                           ),
                           SizedBox(
                             width: 20,
@@ -175,7 +195,8 @@ class _LoginPageState extends State<LoginPage> {
                               maxLength: 20,
                               obscureText: true,
                             ),
-                            maxWidth: constraints.maxWidth * layouts.fractionLoginRegisterSizeLabel,
+                            maxWidth: constraints.maxWidth *
+                                layouts.fractionLoginRegisterSizeLabel,
                           ),
                           SizedBox(
                             width: 20,
@@ -204,13 +225,16 @@ class _LoginPageState extends State<LoginPage> {
                             child: FractionallySizedBox(
                               widthFactor: 0.8,
                               heightFactor: 0.8,
-                              child: RaisedButton(
+                              child: TextButton(
+                                style: layouts.formatButton,
                                 child: Text(
                                   _isLoginButtonEnabled ? 'Login' : 'Wait...',
                                   style: layouts.styleButton,
                                 ),
-                                color: Colors.lightBlue,
-                                onPressed: _isLoginButtonEnabled ? onLoginButtonPressed : () => {},
+                                // color: Colors.lightBlue,
+                                onPressed: _isLoginButtonEnabled
+                                    ? onLoginButtonPressed
+                                    : () => {},
                               ),
                             ),
                           ),
@@ -233,7 +257,8 @@ class _LoginPageState extends State<LoginPage> {
                                     ),
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () {
-                                        Navigator.pushReplacementNamed(context, '/register-page');
+                                        Navigator.pushReplacementNamed(
+                                            context, '/register-page');
                                       },
                                   ),
                                 ],

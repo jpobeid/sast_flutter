@@ -1,10 +1,11 @@
-const String strUrlBase = 'http://localhost:5000';
-const String strUrlExtensionTest = '/test';
-const String strUrlExtensionUser = '/user';
-const String strUrlExtensionDash = '/dash';
-const String strUrlSubExtensionUpload = '/upload';
-const String strUrlSubExtensionImage = '/image';
-const String strUrlSubExtensionProcess = '/process';
+const String urlBase = 'http://localhost:5000';
+const String urlExtensionTest = '/test';
+const String urlExtensionUser = '/user';
+const String urlExtensionDash = '/dash';
+const String urlSubExtensionUpload = '/upload';
+const String urlSubExtensionVerify = '/verify';
+const String urlSubExtensionImage = '/image';
+const String urlSubExtensionProcess = '/process';
 
 const Map<String, String> mapHttpHeader = {"Content-Type": "application/json"};
 

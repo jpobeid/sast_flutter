@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
@@ -84,8 +85,8 @@ class _DashNavigatorState extends State<DashNavigator> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  FlatButton(
-                    color: Colors.lightBlue,
+                  TextButton(
+                    style: layouts.formatButton,
                     child: Text(
                       'Select Files',
                       style: layouts.styleButton,
@@ -110,16 +111,19 @@ class _DashNavigatorState extends State<DashNavigator> {
                       }
                     },
                   ),
-                  FlatButton(
-                    color: Colors.lightBlue,
+                  TextButton(
+                    style: layouts.formatButton,
                     child: Text(
                       'Reset Files',
                       style: layouts.styleButton,
                     ),
                     onPressed: resetNavigator,
                   ),
-                  FlatButton(
-                    color: _canUpload ? Colors.green : Colors.redAccent,
+                  TextButton(
+                    style: TextButton.styleFrom(
+                        backgroundColor:
+                            _canUpload ? Colors.green : Colors.redAccent,
+                        primary: Colors.black),
                     child: Text(
                       'Upload Data',
                       style: layouts.styleButton,
@@ -132,8 +136,8 @@ class _DashNavigatorState extends State<DashNavigator> {
                         bool isConnected = true;
                         http.Response responseTest;
                         try {
-                          responseTest = await http.get(httpData.strUrlBase +
-                              httpData.strUrlExtensionTest);
+                          responseTest = await http.get(
+                              httpData.urlBase + httpData.urlExtensionTest);
                         } catch (e) {
                           isConnected = false;
                         }
@@ -143,28 +147,49 @@ class _DashNavigatorState extends State<DashNavigator> {
                             i++;
                             http.StreamedResponse response =
                                 await postStreamedRequest(
-                                    httpData.strUrlBase +
-                                        httpData.strUrlExtensionDash +
-                                        httpData.strUrlSubExtensionUpload +
+                                    httpData.urlBase +
+                                        httpData.urlExtensionDash +
+                                        httpData.urlSubExtensionUpload +
                                         '/$i',
                                     element.bytes);
                             if (response != null &&
                                 response.statusCode == 200) {
                               setState(() {
                                 _nProgress += (1 / _resultFiles.count);
-                                if ((_nProgress * 1000).round() / 1000 == 1) {
+                              });
+                              if ((_nProgress * 1000).round() / 1000 == 1) {
+                                // Uploads are complete, need backend to verify correct modality and series
+                                http.Response verification = await http.get(
+                                    httpData.urlBase +
+                                        httpData.urlExtensionDash +
+                                        httpData.urlSubExtensionVerify +
+                                        '/0',
+                                    headers: {'email': widget.strUserEmail});
+                                if (verification.statusCode == 200) {
                                   widget.callbackComplete(true);
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      content: Text('Upload complete!'),
+                                      content: Text('Upload successful!'),
                                       backgroundColor: Colors.green,
                                       duration: Duration(
                                           milliseconds: layouts
                                               .nLoginRegisterDurationSnackBarLong),
                                     ),
                                   );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(json.decode(
+                                          verification.body)['message']),
+                                      backgroundColor: Colors.red,
+                                      duration: Duration(
+                                          milliseconds: layouts
+                                              .nLoginRegisterDurationSnackBarLong),
+                                    ),
+                                  );
+                                  resetNavigator();
                                 }
-                              });
+                              }
                             }
                           });
                         } else {
@@ -213,7 +238,10 @@ class _DashNavigatorState extends State<DashNavigator> {
                       itemCount:
                           _listFileName != null ? _listFileName.length : 0,
                       itemBuilder: (context, index) {
-                        return Text(_listFileName[index], textAlign: TextAlign.center,);
+                        return Text(
+                          _listFileName[index],
+                          textAlign: TextAlign.center,
+                        );
                       },
                     ),
                   ),

@@ -52,9 +52,9 @@ class _DashViewerState extends State<DashViewer> {
                   onPressed: () async {
                     try {
                       http.Response response = await http.get(
-                          httpData.strUrlBase +
-                              httpData.strUrlExtensionDash +
-                              httpData.strUrlSubExtensionImage +
+                          httpData.urlBase +
+                              httpData.urlExtensionDash +
+                              httpData.urlSubExtensionImage +
                               '/0',
                           headers: {'email': widget.strUserEmail});
                       setState(() {

@@ -1,14 +1,13 @@
 import 'dart:convert';
 import 'dart:core';
 import 'dart:math' as math;
-import 'package:flutter/rendering.dart';
-import 'package:http/http.dart' as http;
-import 'package:crypto/crypto.dart' as crypto;
 
+import 'package:crypto/crypto.dart' as crypto;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:sast_project/data/layout_data.dart' as layouts;
+import 'package:http/http.dart' as http;
 import 'package:sast_project/data/http_data.dart' as httpData;
+import 'package:sast_project/data/layout_data.dart' as layouts;
 import 'package:sast_project/widgets/sast_app_bar.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -40,10 +39,13 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final TextEditingController _controllerField0 = TextEditingController(text: '');
-  final TextEditingController _controllerField1 = TextEditingController(text: '');
+  final TextEditingController _controllerField0 =
+      TextEditingController(text: '');
+  final TextEditingController _controllerField1 =
+      TextEditingController(text: '');
 
   int _nPhase = 0;
+  String _token;
   bool _isUsernamePermitted = false;
   String _strUsername;
   bool _isRegisterButtonEnabled = true;
@@ -58,8 +60,8 @@ class _RegisterPageState extends State<RegisterPage> {
   Future<void> onRegisterButtonPressed() async {
     switch (_nPhase) {
       case 0:
-        http.Response response =
-            await trySendHttpPost(json.encode({'email': _controllerField0.text}));
+        http.Response response = await trySendHttpPost(
+            json.encode({'email': _controllerField0.text}));
         if (response != null) {
           _isUsernamePermitted = response.statusCode == 200;
           if (_isUsernamePermitted) {
@@ -68,7 +70,8 @@ class _RegisterPageState extends State<RegisterPage> {
             });
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('6-digit verification token sent to ${_controllerField0.text}'),
+                content: Text(
+                    '6-digit verification token sent to ${_controllerField0.text}'),
                 backgroundColor: Colors.green,
                 duration: Duration(milliseconds: 5000),
               ),
@@ -78,7 +81,8 @@ class _RegisterPageState extends State<RegisterPage> {
               SnackBar(
                 content: Text('Email address unauthorized for access'),
                 backgroundColor: Colors.redAccent,
-                duration: Duration(milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
+                duration: Duration(
+                    milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
               ),
             );
           } else if (response.statusCode == 409) {
@@ -86,15 +90,19 @@ class _RegisterPageState extends State<RegisterPage> {
               SnackBar(
                 content: Text('Email address already registered'),
                 backgroundColor: Colors.redAccent,
-                duration: Duration(milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
+                duration: Duration(
+                    milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
               ),
             );
           }
         }
         break;
       case 1:
-        http.Response response = await trySendHttpPost(
-            json.encode({'email': _controllerField0.text, 'token': _controllerField1.text}));
+        _token = _controllerField1.text;
+        http.Response response = await trySendHttpPost(json.encode({
+          'email': _controllerField0.text,
+          'token': _token,
+        }));
         bool isTokenCorrect = response.statusCode == 200;
         if (isTokenCorrect) {
           setState(() {
@@ -108,25 +116,33 @@ class _RegisterPageState extends State<RegisterPage> {
             SnackBar(
               content: Text('Incorrect token'),
               backgroundColor: Colors.redAccent,
-              duration: Duration(milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
+              duration: Duration(
+                  milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
             ),
           );
         }
         break;
       case 2:
-        bool isPasswordsMatching = _controllerField0.text == _controllerField1.text;
+        bool isPasswordsMatching =
+            _controllerField0.text == _controllerField1.text;
         bool isPasswordValid = _controllerField0.text.length > 6;
         if (isPasswordsMatching && isPasswordValid) {
-          String hashedPass = crypto.sha256.convert(utf8.encode(_controllerField0.text)).toString();
-          http.Response response =
-              await trySendHttpPost(json.encode({'email': _strUsername, 'hashedPass': hashedPass}));
+          String hashedPass = crypto.sha256
+              .convert(utf8.encode(_controllerField0.text))
+              .toString();
+          http.Response response = await trySendHttpPost(json.encode({
+            'email': _strUsername,
+            'token': _token,
+            'hashedPass': hashedPass
+          }));
           if (response.statusCode == 200) {
             Navigator.of(context).pushReplacementNamed('/login-page');
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('Account successfully created!'),
                 backgroundColor: Colors.green,
-                duration: Duration(milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
+                duration: Duration(
+                    milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
               ),
             );
           }
@@ -135,7 +151,8 @@ class _RegisterPageState extends State<RegisterPage> {
             SnackBar(
               content: Text('Passwords not matching'),
               backgroundColor: Colors.redAccent,
-              duration: Duration(milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
+              duration: Duration(
+                  milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
             ),
           );
         } else if (!isPasswordValid) {
@@ -143,7 +160,8 @@ class _RegisterPageState extends State<RegisterPage> {
             SnackBar(
               content: Text('Please choose stronger password'),
               backgroundColor: Colors.redAccent,
-              duration: Duration(milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
+              duration: Duration(
+                  milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
             ),
           );
         }
@@ -158,7 +176,10 @@ class _RegisterPageState extends State<RegisterPage> {
     });
     try {
       response = await http.post(
-        httpData.strUrlBase + httpData.strUrlExtensionUser + RegisterPage.strUrlAppendix + '/$_nPhase',
+        httpData.urlBase +
+            httpData.urlExtensionUser +
+            RegisterPage.strUrlAppendix +
+            '/$_nPhase',
         headers: httpData.mapHttpHeader,
         body: httpBody,
       );
@@ -167,7 +188,8 @@ class _RegisterPageState extends State<RegisterPage> {
         SnackBar(
           content: Text('Network error: $e'),
           backgroundColor: Colors.red,
-          duration: Duration(milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
+          duration: Duration(
+              milliseconds: layouts.nLoginRegisterDurationSnackBarLong),
         ),
       );
     } finally {
@@ -187,10 +209,13 @@ class _RegisterPageState extends State<RegisterPage> {
       appBar: makeSastAppBar(context, 'Register', false),
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [
-            layouts.colorLoginRegisterGradient0,
-            layouts.colorLoginRegisterGradient1,
-          ]),
+          gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                layouts.colorLoginRegisterGradient0,
+                layouts.colorLoginRegisterGradient1,
+              ]),
         ),
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
@@ -198,11 +223,14 @@ class _RegisterPageState extends State<RegisterPage> {
           child: Container(
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(layouts.sizeLoginRegisterContainerRadius),
+              borderRadius: BorderRadius.circular(
+                  layouts.sizeLoginRegisterContainerRadius),
             ),
-            height: math.min(layouts.fractionLoginRegisterSizeContainer * sizeHeight,
+            height: math.min(
+                layouts.fractionLoginRegisterSizeContainer * sizeHeight,
                 layouts.listLoginRegisterMaxSizeContainer[0]),
-            width: math.min(layouts.fractionLoginRegisterSizeContainer * sizeWidth,
+            width: math.min(
+                layouts.fractionLoginRegisterSizeContainer * sizeWidth,
                 layouts.listLoginRegisterMaxSizeContainer[1]),
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -238,19 +266,20 @@ class _RegisterPageState extends State<RegisterPage> {
                               ),
                               enabled: _nPhase != 1,
                               style: layouts.styleLabel,
-                              maxLength: RegisterPage
-                                  .mapInputProperties[RegisterPage.mapMapLabel[_nPhase][0]][0],
-                              obscureText: RegisterPage
-                                  .mapInputProperties[RegisterPage.mapMapLabel[_nPhase][0]][1],
+                              maxLength: RegisterPage.mapInputProperties[
+                                  RegisterPage.mapMapLabel[_nPhase][0]][0],
+                              obscureText: RegisterPage.mapInputProperties[
+                                  RegisterPage.mapMapLabel[_nPhase][0]][1],
                             ),
-                            maxWidth: constraints.maxWidth * layouts.fractionLoginRegisterSizeLabel,
+                            maxWidth: constraints.maxWidth *
+                                layouts.fractionLoginRegisterSizeLabel,
                           ),
                           SizedBox(
                             width: 20,
                           ),
                           Icon(
-                            RegisterPage.mapInputProperties[RegisterPage.mapMapLabel[_nPhase][0]]
-                                [2],
+                            RegisterPage.mapInputProperties[
+                                RegisterPage.mapMapLabel[_nPhase][0]][2],
                             size: layouts.sizeLoginRegisterIcon,
                           ),
                         ],
@@ -267,26 +296,30 @@ class _RegisterPageState extends State<RegisterPage> {
                                   child: TextField(
                                     controller: _controllerField1,
                                     decoration: InputDecoration(
-                                      labelText: RegisterPage.mapMapLabel[_nPhase][1],
+                                      labelText:
+                                          RegisterPage.mapMapLabel[_nPhase][1],
                                       labelStyle: layouts.styleLabel,
                                       border: OutlineInputBorder(),
                                       isDense: true,
                                     ),
                                     style: layouts.styleLabel,
                                     maxLength: RegisterPage.mapInputProperties[
-                                        RegisterPage.mapMapLabel[_nPhase][1]][0],
-                                    obscureText: RegisterPage.mapInputProperties[
-                                        RegisterPage.mapMapLabel[_nPhase][1]][1],
+                                        RegisterPage.mapMapLabel[_nPhase]
+                                            [1]][0],
+                                    obscureText:
+                                        RegisterPage.mapInputProperties[
+                                            RegisterPage.mapMapLabel[_nPhase]
+                                                [1]][1],
                                   ),
-                                  maxWidth:
-                                      constraints.maxWidth * layouts.fractionLoginRegisterSizeLabel,
+                                  maxWidth: constraints.maxWidth *
+                                      layouts.fractionLoginRegisterSizeLabel,
                                 ),
                                 SizedBox(
                                   width: 20,
                                 ),
                                 Icon(
-                                  RegisterPage
-                                      .mapInputProperties[RegisterPage.mapMapLabel[_nPhase][1]][2],
+                                  RegisterPage.mapInputProperties[
+                                      RegisterPage.mapMapLabel[_nPhase][1]][2],
                                   size: layouts.sizeLoginRegisterIcon,
                                 ),
                               ],
@@ -310,16 +343,18 @@ class _RegisterPageState extends State<RegisterPage> {
                             child: FractionallySizedBox(
                               widthFactor: 0.8,
                               heightFactor: 0.8,
-                              child: RaisedButton(
+                              child: TextButton(
+                                style: layouts.formatButton,
                                 child: Text(
                                   _isRegisterButtonEnabled
-                                      ? RegisterPage.mapRegisterButtonLabel[_nPhase]
+                                      ? RegisterPage
+                                          .mapRegisterButtonLabel[_nPhase]
                                       : 'Wait...',
                                   style: layouts.styleButton,
                                 ),
-                                color: Colors.lightBlue,
-                                onPressed:
-                                    _isRegisterButtonEnabled ? onRegisterButtonPressed : () => {},
+                                onPressed: _isRegisterButtonEnabled
+                                    ? onRegisterButtonPressed
+                                    : () => {},
                               ),
                             ),
                           ),
@@ -342,7 +377,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                     ),
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () {
-                                        Navigator.pushReplacementNamed(context, '/login-page');
+                                        Navigator.pushReplacementNamed(
+                                            context, '/login-page');
                                       },
                                   ),
                                 ],

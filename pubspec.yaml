@@ -23,7 +23,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  crypto: ^2.1.5
+  crypto: ^3.0.1
   http: ^0.12.2
   file_picker: ^2.1.5+1
 
